@@ -18,4 +18,4 @@
 **与我联系**
 
 * 作者主页：http://blog.ponycool.com 
-* Email: pony#ponycool.com()
+* Email: pony#ponycool.com(将#替换为@)
