@@ -1,21 +1,12 @@
-## Typecho 文章浏览量统计插件 PageViews v1.0.0
+## Typecho 插件
 ---
-统计站点内容页面的总浏览量，所谓内容页面，包括文章页、独立页面和附件显示页
+在typecho的使用过程，很多需求没有找到合适的插件，又不想直接修改核心代码影响升级，所以造了一些轮子。
 
-**使用方法**
+**插件列表**
+1. PageViews 文章浏览量统计插件
 
-1. 下载本插件，放在 usr/plugins/ 目录中
-2. 登录管理后台，激活插件
-3. 在显示的地方调用显示方法
-```php
-语法: PageViews_Plugin::showPageViews();
-输出: '本站总访问量 XX 次'
+**Links**
 
-语法: PageViews_Plugin::showPageViews('点击量','次');
-输出: '点击量 XX 次'
-```
-
-**与我联系**
-
-* 作者主页：http://blog.ponycool.com 
-* Email: pony#ponycool.com(将#替换为@)
+- Blog：http://blog.ponycool.com 
+- Email: pony#ponycool.com(将#替换为@)
+- Github: https://github.com/PonyCool
