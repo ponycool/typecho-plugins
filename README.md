@@ -4,7 +4,7 @@
 
 **插件列表**
 1. PageViews 文章浏览量统计插件
-2. GetRealIP 获取真实IP（暂时不可以，可发中...）
+2. GetRealIP 获取真实IP（暂时不可用，可发中...）
 
 **Links**
 
