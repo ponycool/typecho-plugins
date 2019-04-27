@@ -34,12 +34,13 @@ class PageViews_Plugin implements Typecho_Plugin_Interface
                 ));
             $insertId = $db->query($insert);
         }
+        return '插件安装成功';
     }
 
     /* 禁用插件方法 */
     public static function deactivate()
     {
-        // TODO: Implement deactivate() method.
+        return '插件卸载成功';
     }
 
     /* 插件配置方法 */
