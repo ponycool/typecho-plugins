@@ -14,7 +14,7 @@
 语法: PageViews_Plugin::showPageViews('点击量','次');
 输出: '点击量 XX 次'
 ```
-**Log**
+**Logs**
 
 - 1.0.1
   - 增加起始浏览量
