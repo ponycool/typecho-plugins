@@ -30,7 +30,9 @@ class GetRealIP_Plugin implements Typecho_Plugin_Interface
     public static function config(Typecho_Widget_Helper_Form $form)
     {
         //保存接口调用地址
-        $proxyIps = new Typecho_Widget_Helper_Form_Element_Textarea('proxy_ips', null, null, '代理IP:', '代理IP会自动过滤，请谨慎填写！每行一个IP');
+        $enableStatus = new Typecho_Widget_Helper_Form_Element_Radio('enable_status', array('禁用', '开启'), 0, '禁用/开启：', '启用状态，启用后将获取HTTP_X_FORWARDED_FOR中客户端原始IP');
+        $form->addInput($enableStatus);
+        $proxyIps = new Typecho_Widget_Helper_Form_Element_Textarea('proxy_ips', null, null, '代理IP（选填）:', '代理IP会自动过滤，请谨慎填写！每行一个IP');
         $form->addInput($proxyIps);
     }
 
@@ -42,22 +44,26 @@ class GetRealIP_Plugin implements Typecho_Plugin_Interface
 
     public function setRealIP()
     {
+        $realIp = '0.0.0.0';
         $options = Helper::options();
         $pluginConfig = $options->plugin('GetRealIP');
         $proxyIpsStr = $pluginConfig->proxy_ips;
         $proxyIps = explode(PHP_EOL, $proxyIpsStr);
-        var_dump($proxyIps);
-        //echo get_class($plugin_config);
-//        $_SERVER['REMOTE_ADDR'] = "192.168.16.16";
-//        define("__TYPECHO_IP_SOURCE__", "192.168.16.17");
-//        echo __TYPECHO_IP_SOURCE__;
-//        echo $_SERVER['REMOTE_ADDR'];
-//        $_SERVER['__TYPECHO_IP_SOURCE__'] = "192.168.16.17";
-//        print_r($_ENV);
-//        // var_dump($_SERVER);
-//        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-//            $list = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
-//            $_SERVER['REMOTE_ADDR'] = $list[0];
-//        }
+        $enableStatus = $pluginConfig->enable_status;
+        if (!$enableStatus) {
+            return;
+        }
+        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $realList = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+            foreach ($realList as $k => $v) {
+                if (in_array($v, $proxyIps)) {
+                    unset($realList[$k]);
+                }
+            }
+            if (!is_null($realList[0])) {
+                $realIp = $realList[0];
+            }
+            $_SERVER['REMOTE_ADDR'] = $realIp;
+        }
     }
 }
