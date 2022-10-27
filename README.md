@@ -13,7 +13,7 @@
 - Typecho v1.2.x
 
 #### V1.0
-
+环境要求
 - PHP 5.6 ～ PHP 7.4
 - Typecho v1.1
 
