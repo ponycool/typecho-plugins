@@ -1,19 +1,26 @@
 <?php
 
+use Utils\Helper;
+use Typecho\Plugin\PluginInterface;
+use Typecho\Widget\Helper\Form;
+use Typecho\Widget\Helper\Form\Element\Radio;
+use Typecho\Widget\Helper\Form\Element\Textarea;
+use Typecho\Plugin\Exception;
+
 /**
  * 如果您的服务器位于反向代理后面，开启本插件后可以获取客户端真实IP
  *
  * @package GetRealIP
  * @author Pony
- * @version 1.0.0
- * @link http://blog.ponycool.com
+ * @version 1.2.0
+ * @link https://mayanpeng.cn
  */
-class GetRealIP_Plugin implements Typecho_Plugin_Interface
+class GetRealIP_Plugin implements PluginInterface
 {
-    protected static $pluginName = "GetRealIP";
+    protected static string $pluginName = "GetRealIP";
 
     /* 激活插件方法 */
-    public static function activate()
+    public static function activate(): string
     {
         $method = "setRealIP";
         Typecho_Plugin::factory('index.php')->begin = array('GetRealIP_Plugin', $method);
@@ -21,32 +28,39 @@ class GetRealIP_Plugin implements Typecho_Plugin_Interface
     }
 
     /* 禁用插件方法 */
-    public static function deactivate()
+    public static function deactivate(): string
     {
         return '插件卸载成功';
     }
 
     /* 插件配置方法 */
-    public static function config(Typecho_Widget_Helper_Form $form)
+    public static function config(Form $form)
     {
         //保存接口调用地址
-        $enableStatus = new Typecho_Widget_Helper_Form_Element_Radio('enable_status', array('禁用', '开启'), 0, '禁用/开启：', '启用状态，启用后将获取HTTP_X_FORWARDED_FOR中客户端原始IP');
+        $enableStatus = new Radio('enable_status', array('禁用', '开启'), 0, '禁用/开启：', '启用状态，启用后将获取HTTP_X_FORWARDED_FOR中客户端原始IP');
         $form->addInput($enableStatus);
-        $proxyIps = new Typecho_Widget_Helper_Form_Element_Textarea('proxy_ips', null, null, '代理IP（选填）:', '代理IP会自动过滤，请谨慎填写！每行一个IP');
+        $proxyIps = new Textarea('proxy_ips', null, null, '代理IP（选填）:', '代理IP会自动过滤，请谨慎填写！每行一个IP');
         $form->addInput($proxyIps);
     }
 
     /* 个人用户的配置方法 */
-    public static function personalConfig(Typecho_Widget_Helper_Form $form)
+    public static function personalConfig(Form $form)
     {
         // TODO: Implement personalConfig() method.
     }
 
-    public function setRealIP()
+    /**
+     * @throws Exception
+     */
+    public static function setRealIP(): void
     {
         $realIp = '0.0.0.0';
         $options = Helper::options();
-        $pluginConfig = $options->plugin('GetRealIP');
+        try {
+            $pluginConfig = $options->plugin('GetRealIP');
+        } catch (Exception $exc) {
+            throw new Exception('GetRealIP插件启用失败，错误代码：' . $exc->getCode());
+        }
         $proxyIpsStr = $pluginConfig->proxy_ips;
         $proxyIps = explode(PHP_EOL, $proxyIpsStr);
         $enableStatus = $pluginConfig->enable_status;
