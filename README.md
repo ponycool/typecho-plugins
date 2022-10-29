@@ -28,6 +28,8 @@
 
 1. PageViews 文章浏览量统计插件
 2. GetRealIP 获取真实IP
+3. Cors 跨域资源共享
+4. TagsList 标签选择列表
 
 ### Links
 
