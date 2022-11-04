@@ -26,10 +26,12 @@
 
 插件说明查看插件内ReadMe说明文档
 
-1. PageViews 文章浏览量统计插件
-2. GetRealIP 获取真实IP
-3. Cors 跨域资源共享
-4. TagsList 标签选择列表
+1. [PageViews](https://github.com/ponycool/typecho-plugins/tree/master/PageViews) 文章浏览量统计插件
+2. [GetRealIP](https://github.com/ponycool/typecho-plugins/tree/master/GetRealIP) 获取真实IP
+3. [Cors](https://github.com/ponycool/typecho-plugins/tree/master/Cors) 跨域资源共享
+4. [TagsList](https://github.com/ponycool/typecho-plugins/tree/master/TagsList) 标签选择列表
+5. [Ads](https://github.com/ponycool/typecho-plugins/tree/master/Ads) 广告投放插件
+6. [RunTime](https://github.com/ponycool/typecho-plugins/tree/master/RunTime) 运行时间插件
 
 ### Links
 
