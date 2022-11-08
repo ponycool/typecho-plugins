@@ -213,7 +213,7 @@ class Ads_Plugin implements PluginInterface
 
             self::setDb($db);
             self::setTablePrefix($db->getPrefix());
-            $query = self::$db->select('`ad_code`')
+            $query = self::$db->select('`id`', '`view_times`', '`ad_code`')
                 ->from(self::$tablePrefix . 'ads')
                 ->where('`deleted` = 0');
             if (!is_null($id)) {
@@ -226,6 +226,16 @@ class Ads_Plugin implements PluginInterface
                 ->order('`id`',)
                 ->limit(1);
             $res = self::$db->fetchRow($query);
+
+            // 回写展现次数
+            $id = $res['id'];
+            $viewTimes = (int)$res['view_times'];
+            $viewTimes++;
+            self::$db->query(
+                self::$db->update(self::$tablePrefix . 'ads')
+                    ->rows(['view_times' => $viewTimes])
+                    ->where('id = ?', $id)
+            );
             echo $res['ad_code'];
         } catch (DBException $e) {
             echo '获取广告代码位失败，错误代码：' . $e->getCode();
