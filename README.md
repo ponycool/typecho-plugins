@@ -32,6 +32,8 @@
 4. [TagsList](https://github.com/ponycool/typecho-plugins/tree/master/TagsList) 标签选择列表
 5. [Ads](https://github.com/ponycool/typecho-plugins/tree/master/Ads) 广告投放插件
 6. [RunTime](https://github.com/ponycool/typecho-plugins/tree/master/RunTime) 运行时间插件
+7. [Upload](https://github.com/ponycool/typecho-plugins/tree/master/Upload) 文件上传插件
+8. [Mourn](https://github.com/ponycool/typecho-plugins/tree/master/Mourn) 追悼模式插件
 
 ### Links
 
