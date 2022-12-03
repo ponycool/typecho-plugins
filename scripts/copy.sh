@@ -15,7 +15,7 @@ PLUGINS[0]="Ads"
 PLUGINS[1]="Cors"
 PLUGINS[2]="GetRealIP"
 PLUGINS[3]="RunTime"
-#PLUGINS[4]="Upload"
+PLUGINS[4]="Upload"
 
 info "开始同步......"
 
