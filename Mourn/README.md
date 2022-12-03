@@ -2,7 +2,7 @@
 
 开启追悼模式后，网站变灰
 
-![snapshot](snapshot.png)
+![snapshot](https://github.com/ponycool/typecho-plugins/blob/master/Mourn/snapshot.png)
 
 ### 使用方法
 
