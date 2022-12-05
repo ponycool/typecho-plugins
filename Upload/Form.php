@@ -135,10 +135,10 @@ EOF;
     public static function styleRender(): void
     {
         $style = <<< EOF
-        <style>
-        .typecho-option-tabs>li:hover{
-            cursor: pointer;  
-        }
+<style type="text/css">
+    .typecho-option-tabs>li:hover{
+        cursor: pointer;  
+    }
 </style>
 EOF;
         echo $style;
