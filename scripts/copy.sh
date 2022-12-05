@@ -14,9 +14,11 @@ declare -a PLUGINS
 PLUGINS[0]="Ads"
 PLUGINS[1]="Cors"
 PLUGINS[2]="GetRealIP"
-PLUGINS[3]="RunTime"
-PLUGINS[4]="Upload"
-PLUGINS[4]="Mourn"
+PLUGINS[3]="Mourn"
+PLUGINS[4]="PageViews"
+PLUGINS[5]="RunTime"
+PLUGINS[6]="TagsList"
+PLUGINS[7]="Upload"
 
 info "开始同步......"
 
