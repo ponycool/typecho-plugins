@@ -15,6 +15,7 @@
 require_once 'Autoload.php';
 
 use Typecho\Plugin\Upload\Form as UploadForm;
+use Typecho\Plugin\Upload\Install;
 use Typecho\Widget;
 use Typecho\Plugin\PluginInterface;
 use Typecho\Widget\Helper\Form;
@@ -59,9 +60,12 @@ class Upload_Plugin extends Widget implements PluginInterface
     /**
      * 激活插件
      * @return string
+     * @throws Exception
      */
     public static function activate(): string
     {
+        $initRes = Install::init();
+
         Typecho_Plugin::factory('Widget_Upload')->uploadHandle = [PLUGIN_NAME, 'uploadHandle'];
         Typecho_Plugin::factory('Widget_Upload')->modifyHandle = [PLUGIN_NAME, 'modifyHandle'];
         Typecho_Plugin::factory('Widget_Upload')->deleteHandle = [PLUGIN_NAME, 'deleteHandle'];
@@ -71,7 +75,7 @@ class Upload_Plugin extends Widget implements PluginInterface
         Helper::addRoute('__alioss_for_tp_plugin_version__', '/__alioss_for_tp_plugin_api__/version', PLUGIN_NAME, 'api_version');
         Helper::addRoute('__alioss_for_tp_plugin_log__', '/__alioss_for_tp_plugin_api__/log', PLUGIN_NAME, 'api_log');
 
-        return _t('启用成功，请进行相应设置！');
+        return _t($initRes);
     }
 
 
@@ -134,7 +138,7 @@ class Upload_Plugin extends Widget implements PluginInterface
      * 删除文件
      * @access public
      * @param array $content 文件相关信息
-     * @return string
+     * @return false
      */
     public static function deleteHandle(array $content)
     {
