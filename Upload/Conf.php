@@ -61,10 +61,10 @@ class Conf
 
         $this->setObjectStorage($plugin->objectStorage)
             ->setUserDir($plugin->userDir)
-            ->setBucketName($plugin->bucketName)
+            ->setBucketName($plugin->bucketName ?? '')
             ->setEndPoint($endPoint)
-            ->setAccessID($plugin->accessKeyId)
-            ->setAccessKey($plugin->accessKeySecret)
+            ->setAccessID($plugin->accessKeyId ?? '')
+            ->setAccessKey($plugin->accessKeySecret ?? '')
             ->setCdn($plugin->cdn)
             ->setDiyStyle($plugin->diyStyle)
             ->setExternalDomain($externalDomain)
