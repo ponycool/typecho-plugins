@@ -22,7 +22,7 @@ class Handle
         return self::saveFile($file);
     }
 
-    public static function attachment(array $content)
+    public static function attachment(array $content): string
     {
         $conf = new Conf();
         // todo 需要改成从数据表中获取
