@@ -8,6 +8,7 @@
 
 namespace Typecho\Plugin\Upload;
 
+use Typecho\Db\Exception;
 use Typecho\Plugin\Upload\ObjectStorage\ObjectStorage;
 use Typecho\Plugin\Upload\ObjectStorage\ObjectStorageFactory;
 use Typecho\Widget;
@@ -15,6 +16,11 @@ use Typecho\Widget;
 class Handle
 {
 
+    /**
+     * 上传
+     * @param $file
+     * @return bool|array
+     */
     public static function upload($file): bool|array
     {
         self::fileCheck($file);
@@ -22,24 +28,18 @@ class Handle
         return self::saveFile($file);
     }
 
+    /**
+     * 附件
+     * @param array $content
+     * @return string
+     */
     public static function attachment(array $content): string
     {
-        $conf = new Conf();
-        // todo 需要改成从数据表中获取
-        if (empty($conf->getCdn())) {
-            return sprintf('%s/%s%s%s',
-                $conf->getExternalDomain(),
-                $conf->getUserDir(),
-                $content['attachment']->path,
-                $conf->getDiyStyle()
-            );
+        $cdnUrl = $content['attachment']['cdn_url'] ?? null;
+        if (empty($cdnUrl)) {
+            return $content['attachment']['external_url'] ?? '';
         }
-        return sprintf('%s%s%s%s',
-            $conf->getCdn(),
-            $conf->getUserDir(),
-            $content['attachment']->path,
-            $conf->getDiyStyle()
-        );
+        return $cdnUrl;
     }
 
     /**
@@ -209,12 +209,19 @@ class Handle
 
         //获取文件Hash
         $fileContent = self::getFileContent($file);
-        $hash = hash('md5', $fileContent);
+        $hash_md5 = hash('md5', $fileContent);
+        $hash = hash('sha512', $fileContent);
 
-        // todo 通过hash 判断是否上传过文件
+        // 通过hash 判断是否上传过文件
+        $media = self::getMediaByHash($hash);
+        if (!is_null($media)) {
+            $media['name'] = $media['file_name'];
+            $media['type'] = $media['ext'];
+            $media['path'] = $media['file_url'];
+            return $media;
+        }
 
         // 保存到本地
-
         $localSaveResult = self::saveFileToLocal($saveLocalFile, $fileContent);
         if ($localSaveResult === false) {
             Log::message('文件保存到服务器失败，请检查上传目录权限');
@@ -223,7 +230,7 @@ class Handle
 
         // 获取文件的Hash
         $hashFile = self::getHashFile($saveLocalFile);
-        $saveOsHashFile = self::getOsHashFile($saveOsFile, $hash);
+        $saveOsHashFile = self::getOsHashFile($saveOsFile, $hash_md5);
         rename($saveLocalFile, $hashFile);
 
         // 上传OSS
@@ -236,6 +243,23 @@ class Handle
         if (is_null($uploadResult) || $uploadResult === false) {
             return false;
         }
+
+        // 保存到媒体表中
+        $fileInfo = pathinfo($hashFile);
+        $fileName = $fileInfo['basename'];
+        $size = $uploadResult['info']['size_upload'];
+        $media = [
+            'file_name' => $fileName,
+            'external_url' => self::externalUrl($fileName),
+            'intranet_url' => self::intranetUrl($fileName),
+            'cdn_url' => self::cdnUrl($fileName),
+            'size' => $size,
+            'ext' => $fileInfo['extension'],
+            'md5' => $hash_md5,
+            'hash' => $hash,
+            'mime' => $uploadResult['oss-requestheaders']['Content-Type']
+        ];
+        self::saveMedia($media);
 
         // 开启同步保留本地备份
         if (!$conf->isEnableLocal()) {
@@ -299,16 +323,145 @@ class Handle
         );
     }
 
+    /**
+     * 上传结果
+     * @param array $result
+     * @return array
+     */
     private static function uploadResult(array $result): array
     {
         $conf = new Conf();
         $pathInfo = pathinfo($result['info']['url']);
-        return array(
+        return [
             'name' => $pathInfo['basename'],
             'path' => $conf->getSavePath() . $pathInfo['basename'],
             'size' => intval($result['info']['size_upload']),
             'type' => $pathInfo['extension'],
             'mime' => $result['oss-requestheaders']['Content-Type']
+        ];
+    }
+
+    /**
+     * 根据文件Hash获取媒体文件
+     * @param string $hash
+     * @return array|null
+     */
+    private static function getMediaByHash(string $hash): ?array
+    {
+        $dbInstance = new Database();
+        $table = $dbInstance->getTablePrefix() . 'media';
+        try {
+            return $dbInstance->getDb()->fetchRow(
+                $dbInstance->getDb()->select()
+                    ->from($table)
+                    ->where('hash = ?', $hash)
+                    ->where('deleted = ?', 0)
+                    ->limit(1)
+            );
+        } catch (Exception $e) {
+            Log::message('根据hash获取媒体发生异常，错误代码：' . $e->getCode());
+            return null;
+        }
+    }
+
+    /**
+     * 保存到媒体表
+     * @param array $media
+     * @return void
+     */
+    private static function saveMedia(array $media): void
+    {
+        $conf = new Conf();
+        $time = date('Y-m-d H:i:s');
+        $media['file_url'] = $conf->getSavePath() . $media['file_name'];
+        $media['hash_alg'] = 'sha512';
+        $media['object_storage'] = $conf->getObjectStorage();
+        $media['type'] = 'image';
+        $media['status'] = 'normal';
+        $media['created_at'] = $time;
+        $media['deleted'] = 0;
+        $media['size_by_unit'] = self::getSizeByUnit($media['size'], 'MB');
+        $dbInstance = new Database();
+        $table = $dbInstance->getTablePrefix() . 'media';
+        try {
+            $dbInstance->getDb()->query(
+                $dbInstance->getDb()->insert($table)
+                    ->rows($media)
+                    ->expression('server_replica', (int)$conf->isEnableLocal())
+                    ->expression('deleted', 0)
+            );
+
+        } catch (Exception $e) {
+            Log::message('保存媒体数据发生异常，错误代码：' . $e->getCode());
+        }
+    }
+
+    /**
+     * 获取文件外网URL
+     * @param string $fileName
+     * @return string
+     */
+    private static function externalUrl(string $fileName): string
+    {
+        $conf = new Conf();
+        return sprintf('%s/%s%s%s%s',
+            $conf->getExternalDomain(),
+            $conf->getUserDir(),
+            $conf->getSavePath(),
+            $fileName,
+            $conf->getDiyStyle()
         );
+    }
+
+    /**
+     * 获取文件内网URL
+     * @param string $fileName
+     * @return string
+     */
+    private static function intranetUrl(string $fileName): string
+    {
+        $conf = new Conf();
+        return sprintf('%s/%s%s%s%s',
+            $conf->getIntranetDomain(),
+            $conf->getUserDir(),
+            $conf->getSavePath(),
+            $fileName,
+            $conf->getDiyStyle()
+        );
+    }
+
+    /**
+     * 获取文件CDN URL
+     * @param string $fileName
+     * @return string
+     */
+    private static function cdnUrl(string $fileName): string
+    {
+        $conf = new Conf();
+        if (strlen($conf->getCdn()) === 0) {
+            return '';
+        }
+        return sprintf('%s/%s%s%s%s',
+            $conf->getCdn(),
+            $conf->getUserDir(),
+            $conf->getSavePath(),
+            $fileName,
+            $conf->getDiyStyle()
+        );
+    }
+
+    /**
+     * 获取带单位的文件大小
+     * @param int $size
+     * @param string $unit
+     * @return string
+     */
+    private static function getSizeByUnit(int $size, string $unit = 'b'): string
+    {
+        return match (strtolower($unit)) {
+            'kb' => number_format($size / 1024, 3),
+            'mb' => number_format(($size / 1024) / 1024, 3),
+            default => $size,
+        };
     }
 }

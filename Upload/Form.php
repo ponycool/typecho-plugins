@@ -84,7 +84,7 @@ class Form
         $form->addInput($userDir);
 
         $cdn = new Text('cdn', NULL, '',
-            _t('自定义（CDN）域名'), '请填写自定义域名，留空则使用外网Endpoint访问，以http://或https://开头，以"/"结尾');
+            _t('自定义（CDN）域名'), '请填写自定义域名，留空则使用外网Endpoint访问，以http://或https://开头，结尾请勿添加"/"');
         $form->addInput($cdn);
 
         $doc = '</br><a target="_blank" href="https://help.aliyun.com/document_detail/48884.html">阿里云文档</a>';

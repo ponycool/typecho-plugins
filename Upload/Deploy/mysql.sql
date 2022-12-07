@@ -19,7 +19,7 @@ create table typecho_media
     md5            varchar(50)              null comment 'MD5',
     hash           varchar(1024)            null comment '文件hash值',
     hash_alg       varchar(10)              null comment 'HASH算法',
-    server_replica bit                      null comment '服务器副本：0无，1有',
+    server_replica bit         default b'0' null comment '服务器副本：0无，1有',
     created_at     datetime                 null comment '创建时间',
     updated_at     datetime                 null comment '更新时间',
     deleted_at     datetime                 null comment '删除时间',
