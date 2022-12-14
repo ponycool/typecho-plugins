@@ -11,15 +11,17 @@
 - `/var/webroot/blog/usr/uploads/`
 - `/var/webroot/blog/usr/logs/`
 
-定期查阅日志处理事件错误。开启SELinux的用户注意合理配置权限。
-通过附件删除时，只删除服务器本地文件，不会删除对象粗处中的文件
-通过媒体管理删除文件时，会同步删除对象存储中的文件和服务器本地的文件
-如果报错，请根据错误日志自行处理。
-旧版本Typecho存在无法上传大写扩展名文件的bug，请更新Typecho程序。
-以下是本插件产生的错误日志，请定期查看并处理：
-日志文件是 `/var/webroot/blog/usr/logs/upload_plugin/upload-error.log`
+说明:
 
-目前支持的对象存储：
+- 定期查阅日志处理事件错误。开启SELinux的用户注意合理配置权限。
+- 通过附件删除时，只删除服务器本地文件，不会删除对象粗处中的文件
+- 通过媒体管理删除文件时，会同步删除对象存储中的文件和服务器本地的文件
+- 如果报错，请根据错误日志自行处理。
+- 旧版本Typecho存在无法上传大写扩展名文件的bug，请更新Typecho程序。
+- 以下是本插件产生的错误日志，请定期查看并处理：
+- 日志文件是 `/var/webroot/blog/usr/logs/upload_plugin/upload-error.log`
+
+目前支持的对象存储:
 
 - OSS
 
