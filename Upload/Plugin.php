@@ -142,7 +142,7 @@ class Upload_Plugin extends Widget implements PluginInterface
      */
     public static function deleteHandle(array $content)
     {
-        return false;
+        return Handle::delete($content);
     }
 
     /**

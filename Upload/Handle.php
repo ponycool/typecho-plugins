@@ -135,6 +135,43 @@ class Handle
     }
 
     /**
+     * 删除操作
+     * @param array $content
+     * @return bool
+     */
+    public static function delete(array $content): bool
+    {
+        $text = $content['text'];
+        $image = self::getImageByPreg($text);
+        if (is_null($image)) {
+            return false;
+        }
+
+        $pathInfo = pathinfo($image);
+        $md5 = $pathInfo['filename'];
+        $dbInstance = new Database();
+        try {
+            $query = $dbInstance->getDb()->select()
+                ->from('table.media')
+                ->where('md5 = ?', $md5);
+            $result = $dbInstance->getDb()->fetchRow($query);
+            if (is_null($result)) {
+                return false;
+            }
+            // 删除本地文件
+            $file = UPLOAD_ROOT . $result['file_url'];
+            if (file_exists($file)) {
+                unlink($file);
+                return true;
+            }
+            return false;
+        } catch (Exception $e) {
+            Log::message("删除附件时发生异常，错误代码：" . $e->getCode());
+        }
+        return false;
+    }
+
+    /**
      * 获取对象存储
      * @param Conf $conf
      * @return object|null
@@ -463,5 +500,27 @@ class Handle
             'mb' => number_format(($size / 1024) / 1024, 3),
             default => $size,
         };
+    }
+
+    /**
+     * 通过正则获取文本中的图片
+     * @param string $str
+     * @return string|null
+     */
+    private static function getImageByPreg(string $str): ?string
+    {
+        $image_pattern = "/<img.*?src=['|\"](.*?)['|\"].*?\/?>/";
+        preg_match_all($image_pattern, $str, $matches);
+        if (!empty($matches[1])) {
+            //循环匹配到的src
+            foreach ($matches[1] as $src) {
+                $src_real = strtok($src, '?'); //分割，去掉请求参数
+                $ext = pathinfo($src_real, PATHINFO_EXTENSION); //获取拓展名
+                if (in_array($ext, ['jpg', 'jpeg', 'gif', 'png'])) {
+                    return $src_real;
+                }
+            }
+        }
+        return null;
     }
 }
