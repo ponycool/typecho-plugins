@@ -90,4 +90,25 @@ class Oss implements ObjectStorageInterface
             return false;
         }
     }
+
+    /**
+     * 删除对象
+     * @param string $object
+     * @return mixed
+     */
+    public function deleteObject(string $object): mixed
+    {
+        $ossClient = new OssClient($this->os->getAccessKey(), $this->os->getSecret(), $this->os->getRegion());
+        try {
+            $respResult = $ossClient->deleteObject($this->os->getBucket(), $object);
+            if ($respResult['info']['http_code'] !== 200) {
+                Log::message(sprintf('OSS删除文件失败，error：%s', $respResult['body']));
+                return false;
+            }
+            return $respResult;
+        } catch (OssException $e) {
+            Log::message(sprintf('OSS删除对象时发生错误，error：%s', $e->getMessage()));
+            return false;
+        }
+    }
 }

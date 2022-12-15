@@ -45,4 +45,11 @@ interface ObjectStorageInterface
      * @return bool
      */
     public function objectExist(string $fileName): bool;
+
+    /**
+     * 删除对象
+     * @param string $object
+     * @return mixed
+     */
+    public function deleteObject(string $object): mixed;
 }

@@ -172,6 +172,22 @@ class Handle
     }
 
     /**
+     * 删除对象存储中的对象
+     * @param string $object
+     * @return mixed
+     */
+    public static function deleteObject(string $object): mixed
+    {
+        $conf = new Conf();
+        // 删除对象
+        $ob = self::getObjectStorage($conf);
+        if (!$ob->bucketExist()) {
+            return false;
+        }
+        return $ob->deleteObject($object);
+    }
+
+    /**
      * 获取对象存储
      * @param Conf $conf
      * @return object|null

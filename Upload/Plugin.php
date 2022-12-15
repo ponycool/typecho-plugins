@@ -74,6 +74,8 @@ class Upload_Plugin extends Widget implements PluginInterface
 
         Helper::addRoute('__alioss_for_tp_plugin_version__', '/__alioss_for_tp_plugin_api__/version', PLUGIN_NAME, 'api_version');
         Helper::addRoute('__alioss_for_tp_plugin_log__', '/__alioss_for_tp_plugin_api__/log', PLUGIN_NAME, 'api_log');
+        Helper::addPanel(3, 'Upload/Media.php', '媒体管理', '媒体管理', 'administrator');
+        Helper::addAction('media-edit', 'Upload_Action');
 
         return _t($initRes);
     }
@@ -87,6 +89,8 @@ class Upload_Plugin extends Widget implements PluginInterface
     {
         Helper::removeRoute('__alioss_for_tp_plugin_version__');
         Helper::removeRoute('__alioss_for_tp_plugin_log__');
+        Helper::removePanel(3, 'Upload/Media.php');
+        Helper::removeAction('media-edit');
     }
 
     /**

@@ -2104,7 +2104,7 @@ class OssClient
      * @param string $bucket bucket name
      * @param string $object object name
      * @param array $options
-     * @return null
+     * @return mixed|null
      */
     public function deleteObject($bucket, $object, $options = NULL)
     {
