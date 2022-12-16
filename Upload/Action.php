@@ -40,6 +40,7 @@ class Upload_Action extends Widget implements ActionInterface
 
         $this->on($this->request->is('do=delete'))->delete();
         $this->on($this->request->is('do=sort'))->sort();
+        $this->on($this->request->is('do=clear-logs'))->clearLogs();
 
         $this->response->redirect($this->getOptions()->adminUrl);
     }
@@ -173,6 +174,17 @@ class Upload_Action extends Widget implements ActionInterface
      */
     public function sort(): void
     {
+    }
+
+    /**
+     * 清空日志
+     * @return void
+     */
+    public function clearLogs(): void
+    {
+        $log = new Log();
+        $logFile = $log->getLogFile();
+        file_put_contents($logFile, "");
     }
 
     /**
