@@ -201,6 +201,12 @@ EOF;
                         $(this).addClass('current');
                         $('.log-menu').removeClass('current');
                     })
+                    // 清空日志
+                    $("#clearLogs").on('click',function() {
+                      $.get("/action/media-edit?do=clear-logs",function() {
+                        location.reload()
+                      })
+                    })
                 })
             }
         </script>
@@ -222,9 +228,10 @@ EOF;
     <div class="log-panel" style="display: none">
         <p>以下是本插件产生的错误日志，请定期查看并处理：</p>
         <p>日志文件是&nbsp;&nbsp;<span style="color:#666;font-size:8px">$logFile<span></p>
-        <div style="width:98%;margin: 0 auto">
+        <div style="width:100%;margin: 0 auto">
             <textarea style="color:$logColor;height:480px;width:100%;">$logContent</textarea>
         </div>
+        <button class="btn primary" id="clearLogs">清空日志</button>
     </div> 
 EOF;
         echo $log;
