@@ -33,7 +33,8 @@ include 'menu.php';
         }
 
         .img {
-            cursor: auto;
+            pointer-events: auto;
+            cursor: url("/usr/plugins/Upload/Static/magnifying_glass.ico"), auto;
         }
     </style>
     <div class="main">
@@ -143,7 +144,7 @@ include 'menu.php';
                                     <?php endforeach; ?>
                                 <?php else: ?>
                                     <tr>
-                                        <td colspan="12">
+                                        <td colspan="10">
                                             <h6 class="typecho-list-table-title">
                                                 <?php _e('没有任何媒体'); ?>
                                             </h6>
@@ -159,7 +160,7 @@ include 'menu.php';
         </div>
     </div>
     <div class="imgPreview">
-        <img src="#" alt="" id="imgPreview">
+        <img class="img" src="#" alt="" id="imgPreview">
     </div>
 <?php
 
