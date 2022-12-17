@@ -262,10 +262,10 @@ class Ads_Action extends Widget implements ActionInterface
     /**
      * 错误提示
      * @param string $msg
-     * @param int|null $code
+     * @param string|null $code
      * @return void
      */
-    public function error(string $msg, ?int $code): void
+    public function error(string $msg, ?string $code): void
     {
         if ($code !== 0) {
             $msg .= '，错误代码：' . $code;
