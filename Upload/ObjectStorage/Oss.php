@@ -101,7 +101,7 @@ class Oss implements ObjectStorageInterface
         $ossClient = new OssClient($this->os->getAccessKey(), $this->os->getSecret(), $this->os->getRegion());
         try {
             $respResult = $ossClient->deleteObject($this->os->getBucket(), $object);
-            if ($respResult['info']['http_code'] !== 200) {
+            if ($respResult['info']['http_code'] !== 204) {
                 Log::message(sprintf('OSS删除文件失败，error：%s', $respResult['body']));
                 return false;
             }

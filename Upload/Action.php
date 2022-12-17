@@ -125,36 +125,38 @@ class Upload_Action extends Widget implements ActionInterface
      */
     public function delete(): void
     {
-        $id = $this->request->filter('int')->getArray('id');
-        if ($id) {
-            try {
-                $query = $this->getDb()->select()
-                    ->from('table.media')
-                    ->where('id = ?', $id);
-                $media = $this->getDb()->fetchRow($query);
-                if (is_null($media)) {
-                    return;
-                }
+        $ids = $this->request->filter('int')->getArray('id');
+        if ($ids) {
+            foreach ($ids as $id) {
+                try {
+                    $query = $this->getDb()->select()
+                        ->from('table.media')
+                        ->where('id = ?', $id);
+                    $media = $this->getDb()->fetchRow($query);
+                    if (is_null($media)) {
+                        return;
+                    }
 
-                $table = $this->getPrefix() . 'media';
-                $sql = sprintf(
-                    "update %s set `deleted` = 1,`deleted_at` = '%s' where `id` in (%s)",
-                    $table,
-                    $this->getCurrTime(),
-                    implode(',', $id)
-                );
-                $affectedRows = $this->getDb()->query($sql, $this->getDb()::WRITE, $this->getDb()::UPDATE);
-                // 删除对象存储中的文件
-                $object = 'img/' . $media['file_url'];
-                Handle::deleteObject($object);
-                // 删除本地文件
-                $file = UPLOAD_ROOT . $media['file_url'];
-                if (file_exists($file)) {
-                    unlink($file);
+                    $table = $this->getPrefix() . 'media';
+                    $sql = sprintf(
+                        "update %s set `deleted` = 1,`deleted_at` = '%s' where `id` = %s",
+                        $table,
+                        $this->getCurrTime(),
+                        $id
+                    );
+                    $affectedRows = $this->getDb()->query($sql, $this->getDb()::WRITE, $this->getDb()::UPDATE);
+                    // 删除对象存储中的文件
+                    $object = 'img/' . $media['file_url'];
+                    Handle::deleteObject($object);
+                    // 删除本地文件
+                    $file = UPLOAD_ROOT . $media['file_url'];
+                    if (file_exists($file)) {
+                        unlink($file);
+                    }
+                } catch (Exception $e) {
+                    Log::message('删除媒体文件时发生异常' . $e->getCode());
+                    $this->error('删除媒体文件时发生异常', $e->getCode());
                 }
-            } catch (Exception $e) {
-                Log::message('删除媒体文件时发生异常' . $e->getCode());
-                $this->error('删除媒体文件时发生异常', $e->getCode());
             }
         }
 
@@ -190,10 +192,10 @@ class Upload_Action extends Widget implements ActionInterface
     /**
      * 错误提示
      * @param string $msg
-     * @param int|null $code
+     * @param string|null $code
      * @return void
      */
-    public function error(string $msg, ?int $code): void
+    public function error(string $msg, ?string $code): void
     {
         if ($code !== 0) {
             $msg .= '，错误代码：' . $code;

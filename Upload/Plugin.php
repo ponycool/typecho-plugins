@@ -25,38 +25,6 @@ use Utils\Helper;
 
 class Upload_Plugin extends Widget implements PluginInterface
 {
-    public function api_version()
-    {
-        echo __FUNCTION__;
-        var_dump(self::get_plugin_information()['version']);
-    }
-
-    public function api_log()
-    {
-        if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-        } else {
-        }
-    }
-
-    public static function get_plugin_information()
-    {
-        Typecho_Widget::widget('Widget_Plugins_List@activated', 'activated=1')->to($activatedPlugins);
-        $activatedPlugins = json_decode(json_encode($activatedPlugins), true);
-        $plugins_list = $activatedPlugins['stack'];
-        $plugins_info = array();
-        for ($i = 0; $i < count($plugins_list); $i++) {
-            if ($plugins_list[$i]['title'] == 'AliOssForTypecho') {
-                $plugins_info = $plugins_list[$i];
-                break;
-            }
-        }
-        if (count($plugins_info) < 1) {
-            return false;
-        }
-        return $plugins_info;
-    }
-
-
     /**
      * 激活插件
      * @return string
@@ -72,8 +40,6 @@ class Upload_Plugin extends Widget implements PluginInterface
         Typecho_Plugin::factory('Widget_Upload')->attachmentHandle = [PLUGIN_NAME, 'attachmentHandle'];
         Typecho_Plugin::factory('Widget_Upload')->attachmentDataHandle = [PLUGIN_NAME, 'attachmentDataHandle'];
 
-        Helper::addRoute('__alioss_for_tp_plugin_version__', '/__alioss_for_tp_plugin_api__/version', PLUGIN_NAME, 'api_version');
-        Helper::addRoute('__alioss_for_tp_plugin_log__', '/__alioss_for_tp_plugin_api__/log', PLUGIN_NAME, 'api_log');
         Helper::addPanel(3, 'Upload/Media.php', '媒体管理', '媒体管理', 'administrator');
         Helper::addAction('media-edit', 'Upload_Action');
 
@@ -87,8 +53,6 @@ class Upload_Plugin extends Widget implements PluginInterface
      */
     public static function deactivate(): void
     {
-        Helper::removeRoute('__alioss_for_tp_plugin_version__');
-        Helper::removeRoute('__alioss_for_tp_plugin_log__');
         Helper::removePanel(3, 'Upload/Media.php');
         Helper::removeAction('media-edit');
     }

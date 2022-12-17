@@ -26,7 +26,7 @@ defined('OBS_VERSION') || define('OBS_VERSION', 'v3.22.6');
 defined('SDK_OBS') || define('SDK_OBS', OBS . OBS_VERSION);
 
 defined('PLUGIN_NAME') || define('PLUGIN_NAME', 'Upload_Plugin');
-defined('DEPLOY_DIR') || define('DEPLOY_DIR', UPLOAD_PLUGIN_PATH . 'DEPLOY');
+defined('DEPLOY_DIR') || define('DEPLOY_DIR', UPLOAD_PLUGIN_PATH . 'Deploy');
 // 上传文件目录，相对网站根目录
 defined('UPLOAD_DIR') || define('UPLOAD_DIR', 'usr/uploads/');
 // 上传文件根目录，绝对路径

@@ -35,9 +35,14 @@ class Handle
      */
     public static function attachment(array $content): string
     {
-        $cdnUrl = $content['attachment']['cdn_url'] ?? null;
+        $text = unserialize($content['text']);
+        $local = $text['local'] ?? false;
+        if ($local === false) {
+            return $text['path'];
+        }
+        $cdnUrl = $text['cdn_url'] ?? null;
         if (empty($cdnUrl)) {
-            return $content['attachment']['external_url'] ?? '';
+            return $text['external_url'] ?? '';
         }
         return $cdnUrl;
     }
@@ -324,7 +329,12 @@ class Handle
             Log::message('OSS上传结果格式异常');
             return false;
         }
-        return self::uploadResult($uploadResult);
+        return array_merge(self::uploadResult($uploadResult),
+            [
+                'external_url' => self::externalUrl($fileName),
+                'cdn_url' => self::cdnUrl($fileName),
+            ]
+        );
     }
 
     /**
@@ -390,7 +400,8 @@ class Handle
             'path' => $conf->getSavePath() . $pathInfo['basename'],
             'size' => intval($result['info']['size_upload']),
             'type' => $pathInfo['extension'],
-            'mime' => $result['oss-requestheaders']['Content-Type']
+            'mime' => $result['oss-requestheaders']['Content-Type'],
+            'local' => true
         ];
     }
 
