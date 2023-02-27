@@ -39,4 +39,4 @@
 
 - Blog：https://mayanpeng.cn
 - Email: pony#ponycool.com(将#替换为@)
-- Github: https://github.com/PonyCool
+- Github: https://github.com/ponycool
