@@ -116,11 +116,14 @@ class Upload_Plugin extends Widget implements PluginInterface
     /**
      * 获取实际文件绝对访问路径
      * @access public
-     * @param array $content 文件相关信息
+     * @param object|array $content 文件相关信息
      * @return string
      */
-    public static function attachmentHandle(array $content)
+    public static function attachmentHandle(object|array $content)
     {
+        if ($content instanceof \Typecho\Config) {
+            $content = $content->toArray();
+        }
         return Handle::attachment($content);
     }
 

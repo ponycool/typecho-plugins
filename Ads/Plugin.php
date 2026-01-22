@@ -223,13 +223,18 @@ class Ads_Plugin implements PluginInterface
                 $query->Where('`ad_name` = ?', $adName);
             }
             $query->order('`sort_index`')
-                ->order('`id`',)
+                ->order('`id`')
                 ->limit(1);
             $res = self::$db->fetchRow($query);
 
+            if (!$res || !is_array($res)) {
+                // 直接退出，不输出任何内容
+                return;
+            }
+
             // 回写展现次数
-            $id = $res['id'];
-            $viewTimes = (int)$res['view_times'];
+            $id = (int)($res['id'] ?? 0);
+            $viewTimes = (int)($res['view_times'] ?? 0);
             $viewTimes++;
             self::$db->query(
                 self::$db->update(self::$tablePrefix . 'ads')

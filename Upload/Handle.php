@@ -35,7 +35,22 @@ class Handle
      */
     public static function attachment(array $content): string
     {
-        $text = unserialize($content['text']);
+        // 安全获取 'text' 字段，若不存在或为空则返回空字符串
+        $textData = $content['text'] ?? '';
+        if (!is_string($textData) || $textData === '') {
+            // 无法解析，返回空字符串（符合 :string）
+            return '';
+        }
+        // 安全反序列化（抑制警告 + 验证结果）
+        $text = @unserialize($textData, ['allowed_classes' => false]);
+        if ($text === false) {
+            // 反序列化失败（如数据损坏）
+            return '';
+        }
+        // 确保 $text 是数组
+        if (!is_array($text)) {
+            return '';
+        }
         $local = $text['local'] ?? false;
         if ($local === false) {
             return $text['path'];
